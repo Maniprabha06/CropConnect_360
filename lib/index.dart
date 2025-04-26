@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:niral_prj/shop.dart';
 import 'listpage.dart';
 import 'profilepage.dart';
-// Placeholder pages
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -21,7 +20,6 @@ class _HomePageState extends State<HomePage> {
 
     switch (index) {
       case 0:
-        // Already on HomePage
         break;
       case 1:
         Navigator.push(
@@ -52,6 +50,7 @@ class _HomePageState extends State<HomePage> {
         child: AppBar(
           backgroundColor: const Color(0xFF055B1D),
           elevation: 0,
+          automaticallyImplyLeading: false, // ❌ Removes back arrow
           flexibleSpace: SafeArea(
             child: Container(
               alignment: Alignment.center,
@@ -89,10 +88,7 @@ class _HomePageState extends State<HomePage> {
                 margin: const EdgeInsets.only(top: 20),
                 child: const Text(
                   'Find the best products for your needs',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                  ),
+                  style: TextStyle(fontSize: 20, color: Colors.black),
                 ),
               ),
               const SizedBox(height: 10),
@@ -135,10 +131,7 @@ class _HomePageState extends State<HomePage> {
                   children: const [
                     Text(
                       'Shop',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.black, fontSize: 16),
                     ),
                     SizedBox(width: 8),
                     Icon(Icons.shopping_cart, color: Colors.black, size: 20),
@@ -148,11 +141,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 24),
               Row(
                 children: const [
-                  Icon(
-                    Icons.category_outlined,
-                    color: Color(0xFF055B1D),
-                    size: 20,
-                  ),
+                  Icon(Icons.category_outlined, color: Color(0xFF055B1D), size: 20),
                   SizedBox(width: 8),
                   Text(
                     'Available Products',
@@ -173,36 +162,12 @@ class _HomePageState extends State<HomePage> {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 children: const [
-                  ProductCard(
-                    name: 'Rice Seed',
-                    price: 'Rs 10/kg',
-                    imagePath: 'assets/Rice_Seed.jpeg',
-                  ),
-                  ProductCard(
-                    name: 'Lemon Tree',
-                    price: 'Rs 10/kg',
-                    imagePath: 'assets/lemon_tree.jpeg',
-                  ),
-                  ProductCard(
-                    name: 'Weat Seed',
-                    price: 'Rs 10/kg',
-                    imagePath: 'assets/wheat.jpeg',
-                  ),
-                  ProductCard(
-                    name: 'Cherry Tree',
-                    price: 'Rs 10/kg',
-                    imagePath: 'assets/cherry.jpeg',
-                  ),
-                  ProductCard(
-                    name: 'Mango',
-                    price: 'Rs 10/kg',
-                    imagePath: 'assets/mango.jpeg',
-                  ),
-                  ProductCard(
-                    name: 'Dry Chilly',
-                    price: 'Rs 10/kg',
-                    imagePath: 'assets/drychilly2.jpeg',
-                  ),
+                  ProductCard(name: 'Rice Seed', price: 'Rs 10/kg', imagePath: 'assets/Rice_Seed.jpeg'),
+                  ProductCard(name: 'Lemon Tree', price: 'Rs 10/kg', imagePath: 'assets/lemon_tree.jpeg'),
+                  ProductCard(name: 'Weat Seed', price: 'Rs 10/kg', imagePath: 'assets/wheat.jpeg'),
+                  ProductCard(name: 'Cherry Tree', price: 'Rs 10/kg', imagePath: 'assets/cherry.jpeg'),
+                  ProductCard(name: 'Mango', price: 'Rs 10/kg', imagePath: 'assets/mango.jpeg'),
+                  ProductCard(name: 'Dry Chilly', price: 'Rs 10/kg', imagePath: 'assets/drychilly2.jpeg'),
                 ],
               ),
               const SizedBox(height: 16),
@@ -230,22 +195,10 @@ class _HomePageState extends State<HomePage> {
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.list),
-              label: 'List',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
-              label: 'Shop',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label: 'Profile',
-            ),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.list), label: 'List'),
+            BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Shop'),
+            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
           ],
         ),
       ),
@@ -269,8 +222,6 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigate to a specific page based on the product name
-        // For now, navigating to ShopPage as a placeholder
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const ShopPage()),
@@ -312,19 +263,8 @@ class ProductCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    price,
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
-                    ),
-                  ),
+                  Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(price, style: const TextStyle(color: Colors.grey, fontSize: 12)),
                 ],
               ),
             ),
