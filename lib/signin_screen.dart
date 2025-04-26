@@ -2,7 +2,7 @@ import 'dart:ui'; // <--- Important for blur effect
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Firebase Auth
+
 import 'signup_screen.dart';
 import 'forget_password_screen.dart';
 import 'theme.dart';
@@ -23,25 +23,15 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _obscureText = true;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Google SignIn Function
   Future<void> _handleGoogleSignIn() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-        final OAuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
-        final UserCredential userCredential = await _auth.signInWithCredential(credential);
-        if (userCredential.user != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
-          );
-        }
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -50,27 +40,23 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  // Sign in using email and password
   Future<void> _validateAndSignIn() async {
     if (_formSignInKey.currentState!.validate() && rememberPassword) {
       String input = emailPhoneController.text.trim();
       String password = passwordController.text;
 
-      try {
-        // Firebase email and password sign-in
-        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-          email: input,
-          password: password,
+      bool isValid = (input == 'krish7cbe@gmail.com' || input == '9095088888') && password == 'krishna' ||
+                     (input == 'prabha6603@gmail.com' || input == '8754611677') && password == 'prabha' ||
+                     (input == 'jjegan663@gmail.com' || input == '9894861698') && password == 'jegan';
+
+      if (isValid) {
+        emailPhoneController.clear();
+        passwordController.clear();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
-        if (userCredential.user != null) {
-          emailPhoneController.clear();
-          passwordController.clear();
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
-          );
-        }
-      } catch (e) {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Sign-in failed. Invalid credentials.')),
         );
