@@ -1,202 +1,31 @@
+import 'dart:ui'; // For the blur effect
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'signin_screen.dart';
-import 'theme.dart';
+import 'package:niral_prj/signin_screen.dart'; // Import SignIn screen after successful registration
+import 'package:niral_prj/index.dart'; // Import HomePage or main screen
+import 'package:niral_prj/theme.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController fullNameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   bool agreePersonalData = false;
   bool _obscureText = true;
+  bool _obscureConfirmText = true;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: lightColorScheme.primaryContainer,
-      body: Column(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Image.asset(
-                'assets/niral_split.png',
-                height: 150,
-              ),
-            ),
-          ),
-          const Expanded(flex: 1, child: SizedBox()),
-          Expanded(
-            flex: 7,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(25, 50, 25, 20),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
-              ),
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Text(
-                        'Get Started',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: lightColorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-
-                      // Full Name
-                      TextFormField(
-                        controller: fullNameController,
-                        validator: (value) =>
-                            value == null || value.isEmpty ? 'Enter full name' : null,
-                        decoration: _inputDecoration('Full Name', 'Enter full name'),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Email
-                      TextFormField(
-                        controller: emailController,
-                        validator: (value) =>
-                            value == null || value.isEmpty ? 'Enter email' : null,
-                        decoration: _inputDecoration('Email', 'Enter email'),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Password
-                      TextFormField(
-                        controller: passwordController,
-                        obscureText: _obscureText,
-                        validator: (value) =>
-                            value == null || value.isEmpty ? 'Enter password' : null,
-                        decoration: _inputDecoration('Password', 'Enter password').copyWith(
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureText ? Icons.visibility_off : Icons.visibility,
-                              color: Colors.black45,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Personal Data Agreement
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: agreePersonalData,
-                            onChanged: (value) {
-                              setState(() {
-                                agreePersonalData = value!;
-                              });
-                            },
-                            activeColor: lightColorScheme.primary,
-                          ),
-                          const Expanded(
-                            child: Text(
-                              'I agree to the processing of personal data',
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Sign Up Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _handleSignup,
-                          child: const Text('Sign Up'),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-
-                      // Divider
-                      Row(
-                        children: [
-                          const Expanded(child: Divider()),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: Text('or'),
-                          ),
-                          const Expanded(child: Divider()),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Google Icon
-                      IconButton(
-                        icon: Icon(Bootstrap.google, size: 30),
-                        onPressed: () {
-                          // TODO: Implement Google signup
-                        },
-                      ),
-                      const SizedBox(height: 25),
-
-                      // Navigate to Sign In
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Already have an account? '),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (_) => const SignInScreen()),
-                              );
-                            },
-                            child: Text(
-                              'Sign in',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: lightColorScheme.primary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  InputDecoration _inputDecoration(String label, String hint) {
-    return InputDecoration(
-      labelText: label,
-      hintText: hint,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-    );
-  }
-
+  // Firebase Sign-Up method
   Future<void> _handleSignup() async {
     if (_formKey.currentState!.validate()) {
       if (!agreePersonalData) {
@@ -207,29 +36,284 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
 
       try {
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_fullname', fullNameController.text.trim());
-        await prefs.setString('user_email', emailController.text.trim());
-        await prefs.setString('user_password', passwordController.text.trim());
+        // Firebase SignUp using email and password
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        );
 
-        print("✅ SIGN UP DATA SAVED");
-        print("Full Name: ${fullNameController.text}");
-        print("Email: ${emailController.text}");
-        print("Password: ${passwordController.text}");
+        // Optional: You can save additional data to Firebase Firestore or SharedPreferences
+        // Save the user's information to Firestore or SharedPreferences
+        print("✅ SIGN UP SUCCESSFUL");
+        print("User: ${userCredential.user?.email}");
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Signup successful')),
         );
 
+        // Navigate to sign-in screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const SignInScreen()),
         );
-      } catch (e) {
+      } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Signup failed: $e')),
+          SnackBar(content: Text('Signup failed: ${e.message}')),
         );
       }
     }
+  }
+
+  // Google Sign-Up method
+  Future<void> _googleSignUp() async {
+    try {
+      // Trigger Google Sign-In flow
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser != null) {
+        // Retrieve authentication details
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+        // Use the credentials to sign in with Firebase
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        // Sign in with Firebase
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+        print("✅ Google Sign Up Successful");
+        print("User: ${userCredential.user?.email}");
+
+        // Navigate to home page or wherever you need
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomePage()),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Google Sign-In failed: $e')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background Image
+          Image.asset(
+            'assets/farmer.jpg', // Replace with your correct image path
+            fit: BoxFit.cover,
+          ),
+          
+          // Blur effect
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              color: Colors.black.withOpacity(0.2), // Optional: soft dark overlay
+            ),
+          ),
+
+          // Main Content
+          Column(
+            children: [
+              const Expanded(flex: 1, child: SizedBox(height: 10)),
+              Expanded(
+                flex: 7,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(25.0, 50.0, 25.0, 20.0),
+                  decoration: const BoxDecoration(
+                    color: Colors.white54, // Semi-transparent white container
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40.0),
+                      topRight: Radius.circular(40.0),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset('assets/niral_split.png', height: 150),
+                          const SizedBox(height: 20.0),
+                          Text(
+                            'Create your account',
+                            style: TextStyle(
+                              fontSize: 30.0,
+                              fontWeight: FontWeight.w900,
+                              color: lightColorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 40.0),
+                          // Email field
+                          TextFormField(
+                            controller: emailController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty || !value.contains('@')) {
+                                return 'Please enter a valid email';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              label: const Text('Email'),
+                              hintText: 'Enter your email',
+                              hintStyle: const TextStyle(color: Colors.black26),
+                              border: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 25.0),
+                          // Password field
+                          TextFormField(
+                            controller: passwordController,
+                            obscureText: _obscureText,
+                            obscuringCharacter: '*',
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a Password';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              label: const Text('Password'),
+                              hintText: 'Enter Password',
+                              hintStyle: const TextStyle(color: Colors.black26),
+                              border: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureText ? Icons.visibility : Icons.visibility_off,
+                                  color: Colors.black26,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 25.0),
+                          // Confirm Password field
+                          TextFormField(
+                            controller: confirmPasswordController,
+                            obscureText: _obscureConfirmText,
+                            obscuringCharacter: '*',
+                            validator: (value) {
+                              if (value != passwordController.text) {
+                                return 'Passwords do not match';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              label: const Text('Confirm Password'),
+                              hintText: 'Confirm Password',
+                              hintStyle: const TextStyle(color: Colors.black26),
+                              border: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureConfirmText ? Icons.visibility : Icons.visibility_off,
+                                  color: Colors.black26,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureConfirmText = !_obscureConfirmText;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 25.0),
+                          // Agree to Terms
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: agreePersonalData,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    agreePersonalData = value!;
+                                  });
+                                },
+                                activeColor: lightColorScheme.primary,
+                              ),
+                              const Text('I agree to the terms of service'),
+                            ],
+                          ),
+                          const SizedBox(height: 25.0),
+                          // Sign Up Button
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _handleSignup,
+                              child: const Text('Sign Up'),
+                            ),
+                          ),
+                          const SizedBox(height: 25.0),
+                          // Divider
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(child: Divider(thickness: 0.7, color: Colors.grey.withOpacity(0.5))),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: Text('Or'),
+                              ),
+                              Expanded(child: Divider(thickness: 0.7, color: Colors.grey.withOpacity(0.5))),
+                            ],
+                          ),
+                          const SizedBox(height: 25.0),
+                          // Google Sign-Up Button
+                          IconButton(
+                            icon: Icon(Bootstrap.google, size: 30),
+                            onPressed: _googleSignUp,
+                          ),
+                          const SizedBox(height: 10.0),
+                          // Navigate to Sign In
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (_) => const SignInScreen()),
+                              );
+                            },
+                            child: const Text("Already have an account? Sign In"),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const Expanded(flex: 1, child: SizedBox(height: 10)),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
