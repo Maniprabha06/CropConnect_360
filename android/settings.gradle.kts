@@ -1,15 +1,13 @@
-pluginManagement {
-    val flutterSdkPath: String = settings.extra[""]?.toString()
-            ?: System.getenv("FLUTTER_SDK")
-            ?: throw GradleException("Flutter SDK path not defined. Add 'flutter.sdk' to local.properties or set FLUTTER_SDK environment variable")
+val flutterSdkPath = "C:\\flutter"
 
+pluginManagement {
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven {
-            url = uri("E:/Cropconnect/android/flutter.gradle")
-        }
+    }
+    plugins {
+        id("dev.flutter.flutter-gradle-plugin") version "1.0.0"
     }
 }
 
