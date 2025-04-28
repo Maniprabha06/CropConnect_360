@@ -1,13 +1,23 @@
 plugins {
     id("com.android.application")
-    id("kotlin-android")
-    id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services")  // Apply Google services plugin here
+    id("org.jetbrains.kotlin.android")
+    id("dev.flutter.flutter-gradle-plugin") version "1.0.0" apply false
 }
+
 
 android {
     namespace = "com.example.niral_prj"
-    compileSdk = 34  // Ensure this matches your target SDK version
+    compileSdk = 34
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
     defaultConfig {
         applicationId = "com.example.niral_prj"
         minSdk = 21
@@ -19,13 +29,23 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro')
+            proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+            )
         }
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22"  // Ensure the correct Kotlin version is added
-    implementation "com.google.firebase:firebase-analytics:21.0.0"  // Example Firebase dependency
-    implementation "com.android.support:appcompat-v7:28.0.0"  // Example support library
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.firebase:firebase-analytics:21.5.0")
 }
+
+apply(plugin = "com.google.gms.google-services")

@@ -1,27 +1,25 @@
 pluginManagement {
-    val flutterSdkPath = run {
-        val properties = java.util.Properties()
-        file("local.properties").inputStream().use { properties.load(it) }
-        val flutterSdkPath = properties.getProperty("flutter.sdk")
-        require(flutterSdkPath != null) { "flutter.sdk not set in local.properties" }
-        flutterSdkPath
-    }
+    val flutterSdkPath: String = settings.extra[""]?.toString()
+            ?: System.getenv("FLUTTER_SDK")
+            ?: throw GradleException("Flutter SDK path not defined. Add 'flutter.sdk' to local.properties or set FLUTTER_SDK environment variable")
 
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
         maven {
-            url = uri("https://storage.googleapis.com/download.flutter.io")
+            url = uri("E:/Cropconnect/android/flutter.gradle")
         }
     }
 }
 
-plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("dev.flutter.flutter-gradle-plugin") version "1.0.0"  // Add the Flutter plugin version
-    id("com.google.gms.google-services")
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
 }
 
+rootProject.name = "Cropconnect"
 include(":app")
